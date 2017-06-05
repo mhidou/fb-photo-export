@@ -26,11 +26,11 @@
   "scripts": {
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch --recursive",
-    "start": "react-scripts start",
+    "start": "./node_modules/react-scripts/bin/react-scripts.js start",
     "deploy": "NODE_ENV=production ./node_modules/nodemon/bin/nodemon.js server/index.js",
     "serve": "NODE_ENV=development ./node_modules/nodemon/bin/nodemon.js server/index.js",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "build": "./node_modules/react-scripts/bin/react-scripts.js build",
+    "test": "./node_modules/react-scripts/bin/react-scripts.js test --env=jsdom",
+    "eject": "./node_modules/react-scripts/bin/react-scripts.js eject"
   }
 }
