@@ -6,7 +6,29 @@ Quick start
 
 ```
 
-$ cd front/
-$ npm start
+# clone this repo
+git clone https://github.com/mhidou/fb-photo-export && cd fb-photo-export
+# install dependencies
+npm install
+# build the front app
+npm run build
+# starts the app at localhost:3000
+npm deploy
 
 ```
+
+Your imported photos are located in `public/imports/:userId/:albumId/:photoId` folder.
+
+Slow start (For developers)
+---
+
+```
+
+# run the front app at localhost:3000
+npm run build
+# run the backend at localhost:9000
+npm serve
+
+```
+
+Peace ✌️
