@@ -4,7 +4,7 @@ fb-photo-export
 Quick start
 ---
 
-```
+```shell
 
 # clone this repo
 git clone https://github.com/mhidou/fb-photo-export && cd fb-photo-export
@@ -22,7 +22,7 @@ Your imported photos are located in `public/imports/:userId/:albumId/:photoId` f
 Slow start (For developers)
 ---
 
-```
+```shell
 
 # run the front app at localhost:3000
 npm run build
