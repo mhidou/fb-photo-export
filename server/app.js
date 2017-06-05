@@ -97,7 +97,6 @@ app.post('/import/photo/', (req, res) => {
     request(options)
     .then(function(fbRes) {
         jsonRes = JSON.parse(fbRes);
-        console.log(jsonRes);
 
         download(userId, albumId, jsonRes.id, jsonRes.images[0].source)
         .then(function() {
