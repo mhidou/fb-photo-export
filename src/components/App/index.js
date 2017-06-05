@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import _ from 'underscore'
 
 import Login from '../Login'
 import AlbumsList from '../AlbumsList'
@@ -28,7 +29,8 @@ class App extends Component {
       accessToken: response.accessToken
     }
 
-    const albums = response.albums
+    let albums = response.albums
+     albums.data = _.sortBy(albums.data, 'name')
 
     this.setState((prevState, props) => {
       return {

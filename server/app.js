@@ -80,14 +80,15 @@ if (process.env.NODE_ENV === 'production') {
  * @param {String} userId The user's facebook userID
  * 
  */
-app.post('/import/album/', (req, res) => {
+app.post('/import/photo/', (req, res) => {
     const accessToken = req.body.accessToken;
     const userId = req.body.userId;
     const albumId = req.body.albumId;
+    const photoId = req.body.photoId;
 
     const options = {
         method: 'GET',
-        uri: `https://graph.facebook.com/v2.8/${albumId}/photos?fields=name,images`,
+        uri: `https://graph.facebook.com/v2.8/${photoId}?fields=name,images`,
         qs: {
             access_token: accessToken
         }
@@ -96,19 +97,12 @@ app.post('/import/album/', (req, res) => {
     request(options)
     .then(function(fbRes) {
         jsonRes = JSON.parse(fbRes);
+        console.log(jsonRes);
 
-        var promises = jsonRes.data.map(function(element) {
-            const downloadPromise = download(userId, albumId, element.id, element.images[0].source);
-
-            return downloadPromise;
-        });
-
-        Promise.all(promises)
+        download(userId, albumId, jsonRes.id, jsonRes.images[0].source)
         .then(function() {
             res.json(jsonRes);
         });
-        
-        
     })
 });
 

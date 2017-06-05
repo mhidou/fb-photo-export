@@ -1,12 +1,17 @@
 import React, { Component } from 'react'
-import Spinner from 'react-spinner'
 import 'whatwg-fetch'
+import _ from 'underscore'
+import progressBar from 'react-progressbar.js';
+const Line = progressBar.Line;
+import sweetAlert from 'sweetalert'
 
 import Photo from '../Photo/'
 
 class PhotosList extends Component {
   state = {
     photos: [],
+    selectedPhotos: [],
+    progress: 0,
     paging: {},
     isImported: false,
     isImporting: false,
@@ -36,6 +41,13 @@ class PhotosList extends Component {
 
   importAlbum() {
     const self = this
+    const selectedPhotos = this.state.selectedPhotos
+    let importedPhotos = 0
+
+    if (selectedPhotos.length === 0) {
+      return;
+    }
+
     this.setState((prevState, props) => {
       return {
         photos: this.state.photos,
@@ -44,37 +56,56 @@ class PhotosList extends Component {
         isImporting: true,
       }
     })
-    fetch('http://localhost:' + window.BACKEND_PORT + '/import/album/', {
-      method: 'POST',
-      headers: new Headers({
-        "Content-Type": "application/json",
-      }),
-      mode: 'cors',
-      cache: 'default',
-      body: JSON.stringify({
-        albumId: this.props.currentAlbum,
-        accessToken: this.props.user.accessToken,
-        userId: self.props.user.userID
+
+    selectedPhotos.forEach(function(element) {
+      fetch('http://localhost:' + window.BACKEND_PORT + '/import/photo/', {
+        method: 'POST',
+        headers: new Headers({
+          "Content-Type": "application/json",
+        }),
+        mode: 'cors',
+        cache: 'default',
+        body: JSON.stringify({
+          albumId: self.props.currentAlbum,
+          accessToken: self.props.user.accessToken,
+          photoId: element,
+          userId: self.props.user.userID
+        })
       })
-    })
-    .then((data) => {
-      self.setState((prevState, props) => {
-        return {
-          photos: self.state.photos,
-          paging: self.state.paging,
-          isImported: true,
-          isImporting: false,
+      .then((data) => {
+        importedPhotos++
+
+        self.setState((prevState, props) => {
+          return {
+            progress: (importedPhotos / selectedPhotos.length),
+          }
+        })
+
+        if (importedPhotos === selectedPhotos.length) {
+          self.setState((prevState, props) => {
+            return {
+              isImported: false,
+              isImporting: false,
+            }
+          })
+          sweetAlert("All selected photos has been imported", "Check your public/imports folder", "success")
         }
       })
-    }).catch((error) => {
-      self.setState((prevState, props) => {
-        return {
-          photos: self.state.photos,
-          paging: self.state.paging,
-          isImported: false,
-          isImporting: false,
-        }
-      })
+    });
+  }
+
+  onSelectPhoto(photoId) {
+    const selectedPhotos = this.state.selectedPhotos
+    const alreadySelected = selectedPhotos.indexOf(photoId)
+    
+    const newSelectedPhotos = alreadySelected === -1 ? selectedPhotos.concat(photoId) : _.without(selectedPhotos, photoId);
+
+    this.setState({
+      selectedPhotos: newSelectedPhotos,
+      photos: this.state.photos,
+      paging: this.state.paging,
+      isImported: this.state.isImported,
+      isImporting: this.state.isImporting,
     })
   }
 
@@ -83,6 +114,7 @@ class PhotosList extends Component {
     const next = this.state.paging.next
     const isImported = this.state.isImported
     const isImporting = this.state.isImporting
+    const selectedPhotosLength = this.state.selectedPhotos.length
 
     let loadMore = false
 
@@ -98,9 +130,14 @@ class PhotosList extends Component {
               <i className="fa fa-arrow-left"></i>
             </div>
           }
-          {!isImporting && !isImported &&
+          {!isImporting && !isImported && selectedPhotosLength > 0  &&
             <div className="pull-right" onClick={(this.importAlbum).bind(this)}>
-              <i className="fa fa-download"></i> Import this album
+              <i className="fa fa-download"></i> Import now
+            </div>
+          }
+          {!isImporting && !isImported && !selectedPhotosLength > 0 &&
+            <div className="pull-right">
+              <i className="fa fa-times"></i> Select some photos to import
             </div>
           }
           {isImporting && !isImported &&
@@ -116,8 +153,11 @@ class PhotosList extends Component {
           
         </h1>
         {photos.map((elt, index) => {
+          // const selected = elt.id;
+          // console.log(this.state.selectedPhotos.indexOf(selected))
           return <Photo 
-            key={index} id={elt.id} 
+            key={index} id={elt.id}
+            onSelected={(this.onSelectPhoto).bind(this)}
             name={elt.name} 
             images={elt.images}
             />
@@ -129,12 +169,47 @@ class PhotosList extends Component {
         }
         {isImporting && 
           <div className="spinnerContainer">
-            <Spinner />
+            <Line
+              progress={this.state.progress}
+              text={'test'}
+              options={{
+                strokeWidth: 4,
+                easing: 'easeInOut',
+                duration: 1400,
+                color: '#FFEA82',
+                trailColor: '#eee',
+                trailWidth: 1,
+                svgStyle: {width: '100%', height: '100%'},
+                text: {
+                  style: {
+                    // Text color.
+                    // Default: same as stroke color (options.color)
+                    color: '#999',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    padding: 0,
+                    margin: 0,
+                    transform: null
+                  },
+                  autoStyleContainer: false
+                },
+                from: {color: '#FFEA82'},
+                to: {color: '#ED6A5A'},
+                step: (state, bar) => {
+                  bar.setText(Math.round(bar.value()*100) + ' %');
+                }
+              }}
+              initialAnimate={true}
+              containerStyle={{
+                  height: '50px'
+              }}
+              containerClassName={'.progressbar'}
+              />
           </div>
         }
       </div>
     )
-    //return <div>photos list</div>
   }
 }
 

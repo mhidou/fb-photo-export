@@ -47,7 +47,7 @@ class Album extends Component {
   render() {
     const {name} = this.props
     return (
-      <div className="col-xs-4 Album">
+      <div className="col-xs-6 col-md-4 Album">
         <div className="cover" style={{backgroundImage: 'url('+this.state.background+')'}}>
         </div>
         <div className="info">
