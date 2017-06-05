@@ -13,7 +13,7 @@ npm install
 # build the front app
 npm run build
 # starts the app at localhost:3000
-npm deploy
+npm run deploy
 
 ```
 
@@ -27,7 +27,7 @@ Slow start (For developers)
 # run the front app at localhost:3000
 npm run build
 # run the backend at localhost:9000
-npm serve
+npm run serve
 
 ```
 
