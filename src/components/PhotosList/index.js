@@ -5,6 +5,7 @@ import progressBar from 'react-progressbar.js';
 const Line = progressBar.Line;
 import sweetAlert from 'sweetalert'
 
+import LoadMoreBtn from '../LoadMoreBtn/'
 import Photo from '../Photo/'
 
 class PhotosList extends Component {
@@ -33,10 +34,11 @@ class PhotosList extends Component {
     )
   }
 
-  loadMorePhotos() {
-    // TODO: load more photos
-    // https://graph.facebook.com/<albumId>/?after=<paging.next>
-    console.log('loading more photos')
+  loadMorePhotos (response) {
+    this.setState({
+      photos: this.state.photos.concat(response.data),
+      paging: response.paging
+    })
   }
 
   importAlbum() {
@@ -58,7 +60,7 @@ class PhotosList extends Component {
     })
 
     selectedPhotos.forEach(function(element) {
-      fetch('http://localhost:' + window.BACKEND_PORT + '/import/photo/', {
+      fetch('http://localhost:' + window.BACKEND_PORT + '/photo/import/', {
         method: 'POST',
         headers: new Headers({
           "Content-Type": "application/json",
@@ -72,23 +74,25 @@ class PhotosList extends Component {
           userId: self.props.user.userID
         })
       })
-      .then((data) => {
+      .then((response) => {
         importedPhotos++
 
-        self.setState((prevState, props) => {
-          return {
-            progress: (importedPhotos / selectedPhotos.length),
-          }
-        })
-
-        if (importedPhotos === selectedPhotos.length) {
+        if (response.ok) {
           self.setState((prevState, props) => {
             return {
-              isImported: false,
-              isImporting: false,
+              progress: (importedPhotos / selectedPhotos.length),
             }
           })
-          sweetAlert("All selected photos has been imported", "Check your public/imports folder", "success")
+
+          if (importedPhotos === selectedPhotos.length) {
+            self.setState((prevState, props) => {
+              return {
+                isImported: false,
+                isImporting: false,
+              }
+            })
+            sweetAlert("All selected photos has been imported", "Check your public/imports folder", "success")
+          }
         }
       })
     });
@@ -97,7 +101,7 @@ class PhotosList extends Component {
   onSelectPhoto(photoId) {
     const selectedPhotos = this.state.selectedPhotos
     const alreadySelected = selectedPhotos.indexOf(photoId)
-    
+
     const newSelectedPhotos = alreadySelected === -1 ? selectedPhotos.concat(photoId) : _.without(selectedPhotos, photoId);
 
     this.setState({
@@ -125,7 +129,7 @@ class PhotosList extends Component {
     return (
       <div className="row">
         <h1 className="col-xs-12" style={{cursor: 'pointer'}}>
-          {!isImporting && 
+          {!isImporting &&
             <div className="pull-left" onClick={this.props.onReturn}>
               <i className="fa fa-arrow-left"></i>
             </div>
@@ -150,24 +154,26 @@ class PhotosList extends Component {
               <i className="fa fa-check"></i> Imported
             </div>
           }
-          
+
         </h1>
         {photos.map((elt, index) => {
-          // const selected = elt.id;
-          // console.log(this.state.selectedPhotos.indexOf(selected))
-          return <Photo 
-            key={index} id={elt.id}
+          return <Photo
+            key={index}
+            id={elt.id}
+            albumId={this.props.currentAlbum}
+            userId={this.props.user.userID}
             onSelected={(this.onSelectPhoto).bind(this)}
-            name={elt.name} 
+            name={elt.name}
             images={elt.images}
             />
         })}
-        {loadMore && 
-          <button className="btn btn-info btn-raised col-xs-12" onClick={(this.loadMoreAlbums).bind(this)}>
-            Load more
-          </button>
+        {loadMore &&
+          <LoadMoreBtn
+            callback={(this.loadMorePhotos).bind(this)}
+            next={next}
+            />
         }
-        {isImporting && 
+        {isImporting &&
           <div className="spinnerContainer">
             <Line
               progress={this.state.progress}

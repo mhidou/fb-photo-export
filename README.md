@@ -25,7 +25,7 @@ Slow start (For developers)
 ```shell
 
 # run the front app at localhost:3000
-npm run build
+npm start
 # run the backend at localhost:9000
 npm run serve
 

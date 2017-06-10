@@ -1,13 +1,14 @@
 .Album {
   padding-bottom : 33%;
+  margin: 5px 0;
 }
 
 .Album > .cover {
   position: absolute;
-  top: 5px;
+  top: 0;
   left: 5px;
   right: 5px;
-  bottom: 70px;
+  bottom: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

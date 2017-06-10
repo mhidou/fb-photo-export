@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 class Login extends Component {
 
   static defaultProps = {
-    appId: 'YourAppId',
+    appId: '1907089009534039',
     redirectUri: typeof window !== 'undefined' ? window.location.href : '/',
     scope: 'public_profile,email,user_photos',
     xfbml: false,

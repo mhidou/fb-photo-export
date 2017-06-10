@@ -3,8 +3,7 @@
   cursor: pointer;
 }
 
-.Photo.selected::after {
-  content: "\F00C";
+.Photo.selected::after, .Photo.imported::after {
   font: normal normal normal 40px/1 FontAwesome;
   position: absolute;
   top: 20px;
@@ -18,7 +17,15 @@
   padding-top: 25%;
 }
 
-.Photo.selected > img {
+.Photo.selected::after {
+  content: "\f019";
+}
+
+.Photo.imported::after {
+  content: "\F00C";
+}
+
+.Photo.selected > img, .Photo.imported > img {
   border: 5px solid green;
 }
 

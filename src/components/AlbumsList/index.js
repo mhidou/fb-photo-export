@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
+
+import LoadMoreBtn from '../LoadMoreBtn/'
 import Album from '../Album'
 
 class AlbumsList extends Component {
-
-  loadMoreAlbums (e) {
-    this.props.loadMoreAlbums()
-  }
 
   render() {
     const albums = this.props.albums.data
@@ -30,9 +28,10 @@ class AlbumsList extends Component {
             />
         })}
         {loadMore && 
-          <button className="btn btn-info btn-raised col-xs-12" onClick={(this.loadMoreAlbums).bind(this)}>
-            Load more
-          </button>
+          <LoadMoreBtn
+            callback={this.props.loadMoreAlbums}
+            next={next}
+            />
         }
       </div>
     )

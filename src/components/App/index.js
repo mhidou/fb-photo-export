@@ -30,7 +30,8 @@ class App extends Component {
     }
 
     let albums = response.albums
-     albums.data = _.sortBy(albums.data, 'name')
+    
+    albums.data = _.sortBy(albums.data, 'name')
 
     this.setState((prevState, props) => {
       return {
@@ -41,7 +42,7 @@ class App extends Component {
         importedAlbums: this.state.importedAlbums
       }
     })
-    
+
   }
 
   onSelectAlbum(albumId) {
@@ -56,10 +57,14 @@ class App extends Component {
     })
   }
 
-  loadMoreAlbums(cursor) {
-    // TODO: load more albums
-    // https://graph.facebook.com/me/albums?after=<paging.next>
-    console.log('loading more albums')
+  loadMoreAlbums(response) {
+    const albums = {
+      data: this.state.albums.data.concat(response.data),
+      paging: response.paging
+    }
+    this.setState({
+      albums: albums
+    })
   }
 
   onReturnAlbums() {
@@ -84,11 +89,11 @@ class App extends Component {
       currentUser.signedRequest
     ) {
       return (
-        <AlbumsList 
+        <AlbumsList
           user={currentUser}
           albums={this.state.albums}
           loadMoreAlbums={(this.loadMoreAlbums).bind(this)}
-          onSelectAlbum={(this.onSelectAlbum).bind(this)} 
+          onSelectAlbum={(this.onSelectAlbum).bind(this)}
           />
       )
     }
@@ -97,10 +102,10 @@ class App extends Component {
       currentUser.signedRequest
     ){
       return (
-        <PhotosList 
+        <PhotosList
           user={currentUser}
           currentAlbum={currentAlbum}
-          onReturn={(this.onReturnAlbums).bind(this)} 
+          onReturn={(this.onReturnAlbums).bind(this)}
           />
       )
     }
