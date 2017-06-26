@@ -6,9 +6,9 @@ class LoadMoreBtn extends Component {
   }
 
   loadMore() {
-    console.log(this)
     const self = this
     const next = this.props.next
+    
     self.setState({
         isLoading: true
     })

@@ -59,7 +59,7 @@ class PhotosList extends Component {
       }
     })
 
-    selectedPhotos.forEach(function(element) {
+    selectedPhotos.forEach((element) => {
       fetch('http://localhost:' + window.BACKEND_PORT + '/photo/import/', {
         method: 'POST',
         headers: new Headers({
@@ -85,13 +85,17 @@ class PhotosList extends Component {
           })
 
           if (importedPhotos === selectedPhotos.length) {
-            self.setState((prevState, props) => {
-              return {
-                isImported: false,
-                isImporting: false,
-              }
-            })
-            sweetAlert("All selected photos has been imported", "Check your public/imports folder", "success")
+            setTimeout(() => {
+              self.setState((prevState, props) => {
+                return {
+                  progress: 0,
+                  isImported: false,
+                  isImporting: false,
+                }
+              })
+              sweetAlert("All selected photos has been imported", "Check your public/imports folder", "success")
+            }, 1000);
+            
           }
         }
       })
@@ -177,19 +181,20 @@ class PhotosList extends Component {
           <div className="spinnerContainer">
             <Line
               progress={this.state.progress}
-              text={'test'}
               options={{
-                strokeWidth: 4,
+                strokeWidth: 1,
                 easing: 'easeInOut',
-                duration: 1400,
-                color: '#FFEA82',
+                color: '#fff',
                 trailColor: '#eee',
                 trailWidth: 1,
-                svgStyle: {width: '100%', height: '100%'},
+                from: {color: '#E1F5FE'},
+                to: {color: '#01579B'},
+                step: (state, bar) => {
+                  bar.path.setAttribute('stroke', state.color);
+                  bar.setText(Math.round(bar.value()*100) + ' %');
+                },
                 text: {
                   style: {
-                    // Text color.
-                    // Default: same as stroke color (options.color)
                     color: '#999',
                     position: 'absolute',
                     top: '50%',
@@ -199,11 +204,6 @@ class PhotosList extends Component {
                     transform: null
                   },
                   autoStyleContainer: false
-                },
-                from: {color: '#FFEA82'},
-                to: {color: '#ED6A5A'},
-                step: (state, bar) => {
-                  bar.setText(Math.round(bar.value()*100) + ' %');
                 }
               }}
               initialAnimate={true}
