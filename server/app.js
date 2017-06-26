@@ -1,5 +1,5 @@
 var express = require('express');
-  path = require('path'),
+path = require('path'),
   fs = require('fs'),
   request = require('request-promise'),
   bodyParser = require('body-parser');
@@ -13,8 +13,8 @@ var express = require('express');
  *
  * @return {Promise} Promise from `request-promise`
  */
-var download = function(userId, albumId, photoId, uri){
-  return request.head(uri, function(err, res, body){
+var download = function (userId, albumId, photoId, uri) {
+  return request.head(uri, function (err, res, body) {
     const filename = photoId;
 
     let extention = '.jpg';
@@ -31,22 +31,22 @@ var download = function(userId, albumId, photoId, uri){
     }
 
     // First check that the user folder exists
-    if (!fs.existsSync(dir)){
+    if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
 
     dir = dir.concat('/', albumId);
 
     // Then check that the album folder exists
-    if (!fs.existsSync(dir)){
+    if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
 
     // Get the file and write it to desired path
     request(uri)
-    .pipe(
+      .pipe(
       fs.createWriteStream(dir.concat('/', filename, extention))
-    );
+      );
   });
 };
 
@@ -56,7 +56,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === 'development') {
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
@@ -98,14 +98,14 @@ app.post('/photo/import/', (req, res) => {
   };
 
   request(options)
-  .then(function(fbRes) {
-    jsonRes = JSON.parse(fbRes);
+    .then(function (fbRes) {
+      jsonRes = JSON.parse(fbRes);
 
-    download(userId, albumId, jsonRes.id, jsonRes.images[0].source)
-    .then(function() {
-      res.json(jsonRes);
-    });
-  })
+      download(userId, albumId, jsonRes.id, jsonRes.images[0].source)
+        .then(function () {
+          res.json(jsonRes);
+        });
+    })
 });
 
 /**
@@ -128,7 +128,7 @@ app.get('/photo/:userId/:albumId/:photoId', (req, res) => {
   // TODO look for other file extentions
   const path = 'public/imports/' + userId + '/' + albumId + '/' + photoId + '.jpg';
 
-  if (fs.existsSync(path)){
+  if (fs.existsSync(path)) {
     photoStatus.imported = true;
   }
   else {
